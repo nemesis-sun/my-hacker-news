@@ -35,3 +35,9 @@ export function fetchTopStories(){
 		return jsons;
 	});
 }
+
+export function fetchStoryDetail(id){
+	return fetch(STORIES_DETAIL_URL.replace(":id", id)).then(function(res){
+		return res.json();
+	});
+}

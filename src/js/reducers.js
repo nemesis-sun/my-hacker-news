@@ -17,3 +17,19 @@ export function stories(state={invalidated: true, data: []}, action){
 
 	return state;
 }
+
+export function storyDetail(state={invalidated: true, story: null}, action){
+	if(action.type===actionTypes.VIEW_STORY_DETAIL) {
+		return {
+			invalidated: true,
+			story: null
+		}
+	} else if (action.type===actionTypes.REFRESH_STORY_DETAIL) {
+		return {
+			invalidated: false,
+			story: action.data
+		}
+	}
+
+	return state;
+}

@@ -32,23 +32,23 @@ export function viewStoryDetail(sid){
 	
 			dispatch(viewComments(story.kids));
 
-			// fetcher.fetchComments(story.kids).then(function(comments){
-			// 	dispatch({
-			// 		type: actionTypes.PUSH_COMMENTS,
-			// 		comments: comments 
-			// 	});	
-			// });
 		});
 	}
 }
 
 export function viewComments(commentIds){
 	return function(dispatch, getState) {
-		fetcher.fetchComments(commentIds).then(function(comments){
-			dispatch({
-				type: actionTypes.PUSH_COMMENTS,
-				comments: comments
-			});
-		})
+
+		const loadedIds = getState().comments.map(comment => (comment.id));
+		const toLoadIds = commentIds.filter(cid => (loadedIds.indexOf(cid)<0));
+		
+		if(toLoadIds.length>0){
+			fetcher.fetchComments(toLoadIds).then(function(comments){
+				dispatch({
+					type: actionTypes.PUSH_COMMENTS,
+					comments: comments
+				});
+			})
+		}
 	}
 }

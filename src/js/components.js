@@ -26,8 +26,10 @@ class HackerNews extends React.Component {
 				<div className='row'>
 					<div className='col s12'>
 						<h4>
+							<i className="material-icons hn-link" style={{'fontSize':'13pt'}} onClick={this._onRefreshStories.bind(this)}>loop</i>
 							<IndexLink to='/'  style={{color: 'black'}}>My Hacker News</IndexLink>
-						</h4>		
+						</h4>
+
 					</div>		        
 				</div>
 				<div className='row'>
@@ -39,9 +41,12 @@ class HackerNews extends React.Component {
 		);
 	}
 
-	componentDidMount() {
-		console.log("HackerNews:componentDidMount");
-		this.props.invalidateStories();		
+	_onRefreshStories(){
+		const {location: {pathname: path}} = this.props;
+		if(path.indexOf("/s")===0)
+			this.props.viewStoryDetail(this.props.params.sid);
+		else
+			this.props.invalidateStories();
 	}
 }
 
@@ -55,6 +60,10 @@ class StoryListView extends React.Component {
 			<div>{storyList}</div>
 		);
 	}
+
+	componentDidMount() {
+		this.props.invalidateStories();		
+	}
 }
 
 class StoryItem extends React.Component {
@@ -62,15 +71,14 @@ class StoryItem extends React.Component {
 		let story = this.props.story;
 
 		return (
-			<div className='card blue lighten-4'>
+			<div className='card orange lighten-4'>
 				<div className="card-content white-text">
 					<div>
-						<a className='hn-story-card-title' href={story.url}>{story.title}</a>
-						<span className='hn-story-sec-text'>&nbsp;&nbsp;&nbsp;by&nbsp;{story.by}</span>
+						<a className='hn-story-card-title' href={story.url} target='_blank'>{story.title}</a>
+						<span className="hn-story-sec-text">&nbsp;&nbsp;&nbsp;{story.score}&nbsp;points</span>
+						<span className='hn-story-sec-text hn-link'>&nbsp;by&nbsp;{story.by}</span>
+						<span><Link to={'/s/'+story.id} className='hn-story-sec-text hn-link'>&nbsp;&nbsp;|&nbsp;{story.descendants+' comments'}</Link></span>
 					</div>
-					<div>
-						<span><Link to={'/s/'+story.id} className='hn-story-sec-text'>{story.descendants+' comments'}</Link></span>
-					</div>					
 				</div>
 			</div>
 		);
@@ -106,7 +114,7 @@ class CommentList extends React.Component {
 
 		const {comments, parent, viewComments} = this.props;
 
-		console.log("CommentList:beforeFilter "+comments.length);
+		//console.log("CommentList:beforeFilter "+comments.length);
 
 		let storyComments = [];
 
@@ -118,10 +126,10 @@ class CommentList extends React.Component {
 			});
 		}
 
-		console.log("CommentList:afterFilter "+storyComments.length);
+		//console.log("CommentList:afterFilter "+storyComments.length);
 
 		if(storyComments.length===0)
-			return (<ul className='collection' />);
+			return null;
 
 
 		let commentEles = storyComments.map((comment) => {
@@ -139,10 +147,10 @@ class CommentItem extends React.Component {
 		const {comment, allComments, viewComments} = this.props;
 		const noOfReplies = comment.kids?comment.kids.length:0;
 		return (
-			<li className='collection-item'>			
-					<div className='hn-story-sec-text'>
-						<span>{comment.by}&nbsp;&nbsp;&nbsp;</span>
-						<span onClick={this._viewChildComments.bind(this)}>{noOfReplies}&nbsp;replies</span>
+			<li className='collection-item red lighten-5 hn-comment-box'>			
+					<div>
+						<span className='hn-story-sec-text'>{comment.by}&nbsp;&nbsp;&nbsp;</span>
+						<span className='hn-story-sec-text hn-link' disabled={noOfReplies===0} onClick={this._viewChildComments.bind(this)}>{noOfReplies}&nbsp;replies</span>
 					</div>
 					<div dangerouslySetInnerHTML={{__html: comment.text}}></div>
 					<div>

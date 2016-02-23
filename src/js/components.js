@@ -1,8 +1,8 @@
 import React from 'react'
-import {Router, Route, Link, hashHistory} from 'react-router'
+import {Router, Route, Link, IndexLink, hashHistory} from 'react-router'
 import {connect} from 'react-redux'
-import * as fetcher from './dataFetcher'
 import * as actionTypes from './actionTypes'
+import * as actions from './actions'
 
 function mapStateToProps(state){
 	return state;
@@ -10,10 +10,8 @@ function mapStateToProps(state){
 
 function mapDispatchToProps(dispatch){
 	return {
-		invalidateStories: () => {dispatch({type: actionTypes.INVALIDATE_STORIES})},
-		refreshStories: (stories) => {dispatch({type: actionTypes.REFRESH_STORIES, data: stories})},
-		viewStoryDetail: () => {dispatch({type: actionTypes.VIEW_STORY_DETAIL})},
-		refreshStoryDetail: (story) => {dispatch({type: actionTypes.REFRESH_STORY_DETAIL, data: story})}
+		invalidateStories: () => {dispatch(actions.invalidateStories)},
+		viewStoryDetail: (sid) => {dispatch(actions.viewStoryDetail(sid))}
 	}
 }
 
@@ -26,7 +24,9 @@ class HackerNews extends React.Component {
 			<div>
 				<div className='row'>
 					<div className='col s12'>
-						<h4>My Hacker News</h4>				
+						<h4>
+							<IndexLink to='/'  style={{color: 'black'}}>My Hacker News</IndexLink>
+						</h4>		
 					</div>		        
 				</div>
 				<div className='row'>
@@ -39,10 +39,8 @@ class HackerNews extends React.Component {
 	}
 
 	componentDidMount() {
-		let self = this;
-		fetcher.fetchTopStories().then(function(data){
-			self.props.refreshStories(data);
-		});
+		console.log("HackerNews:componentDidMount");
+		this.props.invalidateStories();		
 	}
 }
 
@@ -63,36 +61,38 @@ class StoryItem extends React.Component {
 		let story = this.props.story;
 
 		return (
-			<div className='card orange lighten-2'>
+			<div className='card blue lighten-4'>
 				<div className="card-content white-text">
 					<div>
 						<a className='hn-story-card-title' href={story.url}>{story.title}</a>
 						<span className='hn-story-sec-text'>&nbsp;&nbsp;&nbsp;by&nbsp;{story.by}</span>
 					</div>
 					<div>
-						<span><Link to={'/s/'+story.id} className='hn-story-sec-text' onClick={this._onStoryDetailClick.bind(this, story.id)}>{story.descendants+' comments'}</Link></span>
+						<span><Link to={'/s/'+story.id} className='hn-story-sec-text'>{story.descendants+' comments'}</Link></span>
 					</div>					
 				</div>
 			</div>
 		);
-	}
-
-	_onStoryDetailClick(sid, e){
-		let self = this;
-		self.props.viewStoryDetail();
 	}
 }
 
 class StoryDetailView extends React.Component {
 	render() {
 		const {storyDetail} = this.props;
-
-		return (
-			<div>StoryDetailView</div>
-		);
+		
+		if(storyDetail.invalidated)
+			return (
+				<div></div>
+			);
+		else
+			return (
+				<div><StoryItem story={storyDetail.story}></StoryItem></div>
+			);
 	}
 
 	componentDidMount(){
+		const {sid} = this.props.params;
+		this.props.viewStoryDetail(sid);
 	}
 }
 

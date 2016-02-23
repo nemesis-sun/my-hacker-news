@@ -29,6 +29,19 @@ export function storyDetail(state={invalidated: true, story: null}, action){
 			invalidated: false,
 			story: action.data
 		}
+	} 
+
+	return state;
+}
+
+export function comments(state=[], action){
+
+	if(action.type===actionTypes.VIEW_STORY_DETAIL) {
+		console.log("reducer:comments:VIEW_STORY_DETAIL");
+		return [];
+	} else if(action.type===actionTypes.PUSH_COMMENTS) {
+		console.log("reducer:comments:PUSH_COMMENTS");
+		return state.concat(action.comments);
 	}
 
 	return state;

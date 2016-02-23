@@ -41,3 +41,22 @@ export function fetchStoryDetail(id){
 		return res.json();
 	});
 }
+
+export function fetchComments(commentIds){
+	let fetchRequests = [];
+	for(let cid of commentIds){
+		fetchRequests.push(fetch(STORIES_DETAIL_URL.replace(":id", cid)));
+	}
+
+	return Q.all(fetchRequests).then(function(resps){
+
+		let jsonPromises = [];
+		for(let res of resps){
+			jsonPromises.push(res.json());
+		}
+
+		return Q.all(jsonPromises);
+	}).then(function(jsons){
+		return jsons;
+	});
+}

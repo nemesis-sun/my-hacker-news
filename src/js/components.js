@@ -11,7 +11,8 @@ function mapStateToProps(state){
 function mapDispatchToProps(dispatch){
 	return {
 		invalidateStories: () => {dispatch(actions.invalidateStories)},
-		viewStoryDetail: (sid) => {dispatch(actions.viewStoryDetail(sid))}
+		viewStoryDetail: (sid) => {dispatch(actions.viewStoryDetail(sid))},
+		viewComments: (commentIds) => {dispatch(actions.viewComments(commentIds))}
 	}
 }
 
@@ -78,7 +79,7 @@ class StoryItem extends React.Component {
 
 class StoryDetailView extends React.Component {
 	render() {
-		const {storyDetail} = this.props;
+		const {storyDetail, comments, viewComments} = this.props;
 		
 		if(storyDetail.invalidated)
 			return (
@@ -86,13 +87,76 @@ class StoryDetailView extends React.Component {
 			);
 		else
 			return (
-				<div><StoryItem story={storyDetail.story}></StoryItem></div>
+				<div>
+					<StoryItem story={storyDetail.story}></StoryItem>
+					<CommentList comments={comments} parent={storyDetail.story} key={storyDetail.story.id} viewComments={viewComments}/>
+				</div>
 			);
 	}
 
 	componentDidMount(){
 		const {sid} = this.props.params;
 		this.props.viewStoryDetail(sid);
+	}
+}
+
+class CommentList extends React.Component {
+	render() {
+
+
+		const {comments, parent, viewComments} = this.props;
+
+		console.log("CommentList:beforeFilter "+comments.length);
+
+		let storyComments = [];
+
+		if(parent.kids && parent.kids.length>0){
+			comments.forEach((comment) => {
+				let i = parent.kids.indexOf(comment.id);
+				if(i>=0)
+					storyComments[i] = comment;
+			});
+		}
+
+		console.log("CommentList:afterFilter "+storyComments.length);
+
+		if(storyComments.length===0)
+			return (<ul className='collection' />);
+
+
+		let commentEles = storyComments.map((comment) => {
+			return (<CommentItem comment={comment} key={comment.id} allComments={comments} viewComments={viewComments} />);
+		});
+
+		return (
+			<ul className='collection'>{commentEles}</ul>
+		);
+	}
+}
+
+class CommentItem extends React.Component {
+	render() {
+		const {comment, allComments, viewComments} = this.props;
+		const noOfReplies = comment.kids?comment.kids.length:0;
+		return (
+			<li className='collection-item'>			
+					<div className='hn-story-sec-text'>
+						<span>{comment.by}&nbsp;&nbsp;&nbsp;</span>
+						<span onClick={this._viewChildComments.bind(this)}>{noOfReplies}&nbsp;replies</span>
+					</div>
+					<div dangerouslySetInnerHTML={{__html: comment.text}}></div>
+					<div>
+						<CommentList comments={allComments} parent={comment} key={comment.id} viewComments={viewComments} />
+					</div>
+			</li>
+		);
+	}
+
+	_viewChildComments(){
+		const {comment, viewComments} = this.props;
+		if(comment.kids && comment.kids.length > 0) {
+			viewComments(comment.kids);
+		}
 	}
 }
 

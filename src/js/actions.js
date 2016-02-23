@@ -29,7 +29,26 @@ export function viewStoryDetail(sid){
 
 			return story;
 		}).then(function(story){
-			
+	
+			dispatch(viewComments(story.kids));
+
+			// fetcher.fetchComments(story.kids).then(function(comments){
+			// 	dispatch({
+			// 		type: actionTypes.PUSH_COMMENTS,
+			// 		comments: comments 
+			// 	});	
+			// });
 		});
+	}
+}
+
+export function viewComments(commentIds){
+	return function(dispatch, getState) {
+		fetcher.fetchComments(commentIds).then(function(comments){
+			dispatch({
+				type: actionTypes.PUSH_COMMENTS,
+				comments: comments
+			});
+		})
 	}
 }

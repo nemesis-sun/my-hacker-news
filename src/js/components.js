@@ -10,7 +10,7 @@ function mapStateToProps(state){
 
 function mapDispatchToProps(dispatch){
 	return {
-		invalidateStories: () => {dispatch(actions.invalidateStories)},
+		invalidateStories: (force) => {dispatch(actions.invalidateStories(force))},
 		viewStoryDetail: (sid) => {dispatch(actions.viewStoryDetail(sid))},
 		viewComments: (commentIds) => {dispatch(actions.viewComments(commentIds))}
 	}
@@ -46,7 +46,7 @@ class HackerNews extends React.Component {
 		if(path.indexOf("/s")===0)
 			this.props.viewStoryDetail(this.props.params.sid);
 		else
-			this.props.invalidateStories();
+			this.props.invalidateStories(true);
 	}
 }
 
@@ -62,7 +62,7 @@ class StoryListView extends React.Component {
 	}
 
 	componentDidMount() {
-		this.props.invalidateStories();		
+		this.props.invalidateStories(false);		
 	}
 }
 

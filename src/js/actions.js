@@ -3,19 +3,51 @@ import * as actionTypes from './actionTypes'
 
 
 const COMMENT_LOAD_BATCH_SIZE = 5;
+const MAIN_STORY_LIST_SIZE = 50;
+const STORY_LOAD_BATCH_SIZE = 10;
 
+const STORY_CACHE_EXPIRY_MIN = 1;
 
-export function invalidateStories(dispatch, getState){
-	dispatch({
-		type: actionTypes.INVALIDATE_STORIES
-	});
+export function invalidateStories(force){
 
-	fetcher.fetchTopStories().then(function(stories){
-		dispatch({
-			type: actionTypes.REFRESH_STORIES,
-			data: stories
-		})
-	})
+	return function(dispatch, getState){
+
+		let now = Date.now();
+		let storyLastRefresh =  getState().stories.lastRefresh;
+
+		if(force || (now > storyLastRefresh+STORY_CACHE_EXPIRY_MIN*60*1000)){
+
+			dispatch({
+				type: actionTypes.INVALIDATE_STORIES,
+				lastRefresh: Date.now()
+			});
+
+			fetcher.fetchTopStories().then(function(storyIds){
+
+				loadStoriesAsync(storyIds.splice(0, MAIN_STORY_LIST_SIZE), dispatch);
+
+			});
+
+		}
+	}
+
+}
+
+function loadStoriesAsync(storyIds, dispatch){
+
+	if(storyIds.length>0){
+		let idBatch =  storyIds.splice(0, STORY_LOAD_BATCH_SIZE);
+
+		fetcher.fetchStories(idBatch).then(function(stories){
+			dispatch({
+				type: actionTypes.REFRESH_STORIES,
+				data: stories,
+				lastRefresh: Date.now()
+			});
+
+			loadStoriesAsync(storyIds, dispatch);
+		});
+	}
 }
 
 export function viewStoryDetail(sid){
@@ -24,7 +56,9 @@ export function viewStoryDetail(sid){
 			type: actionTypes.VIEW_STORY_DETAIL
 		});
 
-		fetcher.fetchStoryDetail(sid).then(function(story){
+		fetcher.fetchStories([sid]).then(function(stories){
+			let story = stories[0];
+
 			dispatch({
 				type: actionTypes.REFRESH_STORY_DETAIL,
 				data: story

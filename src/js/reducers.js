@@ -1,17 +1,19 @@
 import * as actionTypes from "./actionTypes"
 
-export function stories(state={invalidated: true, data: []}, action){
+export function stories(state={invalidated: true, data: [], lastRefresh: 0}, action){
 	if(action.type===actionTypes.INVALIDATE_STORIES){
 		
 		return {
 			invalidated: true,
-			data: []
+			data: [],
+			lastRefresh: action.lastRefresh
 		};
 	} else if (action.type===actionTypes.REFRESH_STORIES){
 
 		return {
 			invalidated: false,
-			data: action.data
+			data: state.data.concat(action.data),
+			lastRefresh: action.lastRefresh
 		};
 	}
 

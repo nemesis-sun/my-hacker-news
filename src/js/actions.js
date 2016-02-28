@@ -2,6 +2,9 @@ import * as fetcher from './dataFetcher'
 import * as actionTypes from './actionTypes'
 
 
+const COMMENT_LOAD_BATCH_SIZE = 5;
+
+
 export function invalidateStories(dispatch, getState){
 	dispatch({
 		type: actionTypes.INVALIDATE_STORIES
@@ -43,12 +46,28 @@ export function viewComments(commentIds){
 		const toLoadIds = commentIds.filter(cid => (loadedIds.indexOf(cid)<0));
 		
 		if(toLoadIds.length>0){
-			fetcher.fetchComments(toLoadIds).then(function(comments){
-				dispatch({
-					type: actionTypes.PUSH_COMMENTS,
-					comments: comments
-				});
-			})
+			// fetcher.fetchComments(toLoadIds).then(function(comments){
+			// 	dispatch({
+			// 		type: actionTypes.PUSH_COMMENTS,
+			// 		comments: comments
+			// 	});
+			// })
+
+			loadCommentsAsync(toLoadIds, dispatch);
 		}
+	}
+}
+
+function loadCommentsAsync(commentIds, dispatch){
+	if(commentIds.length>0){
+		let idBatch = commentIds.splice(0, COMMENT_LOAD_BATCH_SIZE);
+
+		fetcher.fetchComments(idBatch).then(function(comments){
+			dispatch({
+				type: actionTypes.PUSH_COMMENTS,
+				comments: comments
+			});
+			loadCommentsAsync(commentIds, dispatch);
+		})
 	}
 }

@@ -10,7 +10,8 @@ function mapStateToProps(state){
 
 function mapDispatchToProps(dispatch){
 	return {
-		invalidateStories: (force) => {dispatch(actions.invalidateStories(force))},
+		invalidateStories: (force) => {dispatch(actions.invalidateContent("story", force))},
+		invalidateAsks: (force) => {dispatch(actions.invalidateContent("ask", force))},
 		viewStoryDetail: (sid) => {dispatch(actions.viewStoryDetail(sid))},
 		viewComments: (commentIds) => {dispatch(actions.viewComments(commentIds))}
 	}
@@ -25,11 +26,16 @@ class HackerNews extends React.Component {
 			<div>
 				<div className='row'>
 					<div className='col s12'>
-						<h4>
+						<span>
 							<i className="material-icons hn-link" style={{'fontSize':'13pt'}} onClick={this._onRefreshStories.bind(this)}>loop</i>
-							<IndexLink to='/'  style={{color: 'black'}}>My Hacker News</IndexLink>
-						</h4>
-
+							<span>
+								<IndexLink to='/'  style={{color: 'black', 'fontSize': '20pt'}}>My Hacker News</IndexLink>
+							</span>
+							&nbsp;&nbsp;
+							<span>
+								<Link to='/asks'>Asks</Link>
+							</span>
+						</span>
 					</div>		        
 				</div>
 				<div className='row'>
@@ -50,34 +56,64 @@ class HackerNews extends React.Component {
 	}
 }
 
-class StoryListView extends React.Component {
+class ItemListView extends React.Component {
 	render() {
-		let storyList = this.props.stories.data.map((story) => {
-			return (<StoryItem story={story} key={story.id} viewStoryDetail={this.props.viewStoryDetail} />);
+
+		let itemList = [];
+
+		switch(this.props.location.pathname){
+			case "/": itemList = this.props.stories.data; break;
+			case "/asks": itemList = this.props.asks.data; break;
+		}
+
+		let itemEleList = itemList.map((item) => {
+			return (<Item item={item} key={item.id} viewStoryDetail={this.props.viewStoryDetail} />);
 		});
 
 		return (
-			<div>{storyList}</div>
+			<div>{itemEleList}</div>
 		);
 	}
 
 	componentDidMount() {
-		this.props.invalidateStories(false);		
+		console.log("ItemListView:componentDidMount");
+
+		this._invalidateContentIfNeeded(this.props.location.pathname);
 	}
+
+	componentWillReceiveProps(newProps){
+		console.log(`ItemListView:componentWillReceiveProps:${newProps.location.pathname}:${this.props.location.pathname}`);
+
+		if(newProps.location.pathname!==this.props.location.pathname){
+			this._invalidateContentIfNeeded(newProps.location.pathname);
+		}
+	}
+
+	_invalidateContentIfNeeded(pathname){
+
+		console.log(`ItemListView:_invalidateContentIfNeeded:${pathname}`);
+
+		switch(pathname){
+			case "/": this.props.invalidateStories(false); break;
+			case "/asks": this.props.invalidateAsks(false); break;
+		}
+	}
+
+
 }
 
-class StoryItem extends React.Component {
+class Item extends React.Component {
 	render() {
-		let story = this.props.story;
+		let {item} = this.props;
 
 		return (
 			<div className='card orange lighten-4'>
 				<div className="card-content white-text">
 					<div>
-						<a className='hn-story-card-title' href={story.url} target='_blank'>{story.title}</a>
-						<span className="hn-story-sec-text">&nbsp;&nbsp;&nbsp;{story.score}&nbsp;points</span>
-						<span className='hn-story-sec-text hn-link'>&nbsp;by&nbsp;{story.by}</span>
-						<span><Link to={'/s/'+story.id} className='hn-story-sec-text hn-link'>&nbsp;&nbsp;|&nbsp;{story.descendants+' comments'}</Link></span>
+						<a className='hn-story-card-title' href={item.url} target='_blank'>{item.title}</a>
+						<span className="hn-story-sec-text">&nbsp;&nbsp;&nbsp;{item.score}&nbsp;points</span>
+						<span className='hn-story-sec-text hn-link'>&nbsp;by&nbsp;{item.by}</span>
+						<span><Link to={'/s/'+item.id} className='hn-story-sec-text hn-link'>&nbsp;&nbsp;|&nbsp;{item.descendants+' comments'}</Link></span>
 					</div>
 				</div>
 			</div>
@@ -171,6 +207,6 @@ class CommentItem extends React.Component {
 
 export default {
 	HackerNews: connectToStore(HackerNews),
-	StoryListView: connectToStore(StoryListView),
+	ItemListView: connectToStore(ItemListView),
 	StoryDetailView: connectToStore(StoryDetailView)
 }

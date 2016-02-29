@@ -48,3 +48,22 @@ export function comments(state=[], action){
 
 	return state;
 }
+
+export function asks(state={invalidated: true, data: [], lastRefresh: 0}, action){
+
+	if(action.type===actionTypes.INVALIDATE_ASKS){
+		return {
+			invalidated: true,
+			data: [],
+			lastRefresh: action.lastRefresh
+		}
+	} else if (action.type===actionTypes.REFRESH_ASKS){
+		return {
+			invalidated: false,
+			data: state.data.concat(action.data),
+			lastRefresh: action.lastRefresh
+		};
+	}
+
+	return state;
+}

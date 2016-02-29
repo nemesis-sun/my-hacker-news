@@ -28,6 +28,11 @@ export function invalidateContent(contentType, force){
 				refreshActionType = actionTypes.REFRESH_ASKS;
 				fetchAction = fetcher.fetchTopAsks;
 				break;
+			case "show":
+				content = getState().shows;
+				actionType = actionTypes.INVALIDATE_SHOWS;
+				refreshActionType = actionTypes.REFRESH_SHOWS;
+				fetchAction = fetcher.fetchTopShows;
 		}
 
 		let lastRefresh =  content.lastRefresh;
@@ -67,24 +72,24 @@ function loadContentAsync(ids, dispatch, refreshActionType){
 	}
 }
 
-export function viewStoryDetail(sid){
+export function viewItemDetail(id){
 	return function(dispatch, getState){
 		dispatch({
-			type: actionTypes.VIEW_STORY_DETAIL
+			type: actionTypes.VIEW_ITEM_DETAIL
 		});
 
-		fetcher.fetchItems([sid]).then(function(stories){
-			let story = stories[0];
+		fetcher.fetchItems([id]).then(function(items){
+			let item = items[0];
 
 			dispatch({
-				type: actionTypes.REFRESH_STORY_DETAIL,
-				data: story
+				type: actionTypes.REFRESH_ITEM_DETAIL,
+				data: item
 			});
 
-			return story;
-		}).then(function(story){
+			return item;
+		}).then(function(item){
 	
-			dispatch(viewComments(story.kids));
+			dispatch(viewComments(item.kids));
 
 		});
 	}

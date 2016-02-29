@@ -12,7 +12,8 @@ function mapDispatchToProps(dispatch){
 	return {
 		invalidateStories: (force) => {dispatch(actions.invalidateContent("story", force))},
 		invalidateAsks: (force) => {dispatch(actions.invalidateContent("ask", force))},
-		viewStoryDetail: (sid) => {dispatch(actions.viewStoryDetail(sid))},
+		invalidateShows: (force) => {dispatch(actions.invalidateContent("show", force))},
+		viewItemDetail: (id) => {dispatch(actions.viewItemDetail(id))},
 		viewComments: (commentIds) => {dispatch(actions.viewComments(commentIds))}
 	}
 }
@@ -32,9 +33,13 @@ class HackerNews extends React.Component {
 								<IndexLink to='/'  style={{color: 'black', 'fontSize': '20pt'}}>My Hacker News</IndexLink>
 							</span>
 							&nbsp;&nbsp;
-							<span>
-								<Link to='/asks'>Asks</Link>
+							<span className="hn-link hn-text-black">
+								<Link to='/asks'>Ask</Link>
 							</span>
+							&nbsp;&nbsp;
+							<span className="hn-link hn-text-black">
+								<Link to='/shows'>Show</Link>
+							</span>							
 						</span>
 					</div>		        
 				</div>
@@ -49,9 +54,14 @@ class HackerNews extends React.Component {
 
 	_onRefreshStories(){
 		const {location: {pathname: path}} = this.props;
-		if(path.indexOf("/s")===0)
-			this.props.viewStoryDetail(this.props.params.sid);
-		else
+
+		if(path.indexOf("/i")===0)
+			this.props.viewItemDetail(this.props.params.id);
+		else if(path.indexOf("/asks")===0)
+			this.props.invalidateAsks(true);
+		else if(path.indexOf("/shows")===0)
+			this.props.invalidateShows(true);
+		else if(path==="/")
 			this.props.invalidateStories(true);
 	}
 }
@@ -64,10 +74,11 @@ class ItemListView extends React.Component {
 		switch(this.props.location.pathname){
 			case "/": itemList = this.props.stories.data; break;
 			case "/asks": itemList = this.props.asks.data; break;
+			case "/shows": itemList = this.props.shows.data; break;
 		}
 
 		let itemEleList = itemList.map((item) => {
-			return (<Item item={item} key={item.id} viewStoryDetail={this.props.viewStoryDetail} />);
+			return (<Item item={item} key={item.id} viewItemDetail={this.props.viewItemDetail} location={this.props.location}/>);
 		});
 
 		return (
@@ -76,13 +87,10 @@ class ItemListView extends React.Component {
 	}
 
 	componentDidMount() {
-		console.log("ItemListView:componentDidMount");
-
 		this._invalidateContentIfNeeded(this.props.location.pathname);
 	}
 
 	componentWillReceiveProps(newProps){
-		console.log(`ItemListView:componentWillReceiveProps:${newProps.location.pathname}:${this.props.location.pathname}`);
 
 		if(newProps.location.pathname!==this.props.location.pathname){
 			this._invalidateContentIfNeeded(newProps.location.pathname);
@@ -91,11 +99,10 @@ class ItemListView extends React.Component {
 
 	_invalidateContentIfNeeded(pathname){
 
-		console.log(`ItemListView:_invalidateContentIfNeeded:${pathname}`);
-
 		switch(pathname){
 			case "/": this.props.invalidateStories(false); break;
 			case "/asks": this.props.invalidateAsks(false); break;
+			case "/shows": this.props.invalidateShows(false); break;
 		}
 	}
 
@@ -104,16 +111,27 @@ class ItemListView extends React.Component {
 
 class Item extends React.Component {
 	render() {
-		let {item} = this.props;
+		let {item, location: {pathname}} = this.props;
+		let itemText = <div></div>;
+		let itemLink = null;
+
+		if(pathname.indexOf("/i")===0)
+			itemText = (<div dangerouslySetInnerHTML = {{__html: item.text}} className="hn-text-black"></div>);
+
+		if(item.url)
+			itemLink = (<a className='hn-story-card-title' href={item.url} target='_blank'>{item.title}</a>);
+		else 
+			itemLink = (<span className='hn-story-card-title hn-link hn-text-black'><Link to={'/i/'+item.id}>{item.title}</Link></span>);
 
 		return (
 			<div className='card orange lighten-4'>
 				<div className="card-content white-text">
 					<div>
-						<a className='hn-story-card-title' href={item.url} target='_blank'>{item.title}</a>
+						{itemLink}
 						<span className="hn-story-sec-text">&nbsp;&nbsp;&nbsp;{item.score}&nbsp;points</span>
 						<span className='hn-story-sec-text hn-link'>&nbsp;by&nbsp;{item.by}</span>
-						<span><Link to={'/s/'+item.id} className='hn-story-sec-text hn-link'>&nbsp;&nbsp;|&nbsp;{item.descendants+' comments'}</Link></span>
+						<span><Link to={'/i/'+item.id} className='hn-story-sec-text hn-link'>&nbsp;&nbsp;|&nbsp;{item.descendants+' comments'}</Link></span>
+						{itemText}
 					</div>
 				</div>
 			</div>
@@ -121,26 +139,26 @@ class Item extends React.Component {
 	}
 }
 
-class StoryDetailView extends React.Component {
+class ItemDetailView extends React.Component {
 	render() {
-		const {storyDetail, comments, viewComments} = this.props;
+		const {itemDetail, comments, viewComments} = this.props;
 		
-		if(storyDetail.invalidated)
+		if(itemDetail.invalidated)
 			return (
 				<div></div>
 			);
 		else
 			return (
 				<div>
-					<StoryItem story={storyDetail.story}></StoryItem>
-					<CommentList comments={comments} parent={storyDetail.story} key={storyDetail.story.id} viewComments={viewComments}/>
+					<Item item={itemDetail.item} viewItemDetail={this.props.viewItemDetail} location={this.props.location}></Item>
+					<CommentList comments={comments} parent={itemDetail.item} key={itemDetail.item.id} viewComments={viewComments}/>
 				</div>
 			);
 	}
 
 	componentDidMount(){
-		const {sid} = this.props.params;
-		this.props.viewStoryDetail(sid);
+		const {params: {id}, viewItemDetail} = this.props;
+		viewItemDetail(id);
 	}
 }
 
@@ -208,5 +226,5 @@ class CommentItem extends React.Component {
 export default {
 	HackerNews: connectToStore(HackerNews),
 	ItemListView: connectToStore(ItemListView),
-	StoryDetailView: connectToStore(StoryDetailView)
+	ItemDetailView: connectToStore(ItemDetailView)
 }

@@ -2,7 +2,8 @@ import Q from 'q'
 
 const TOP_STORIES_URL = "https://hacker-news.firebaseio.com/v0/topstories.json";
 const STORIES_DETAIL_URL = "https://hacker-news.firebaseio.com/v0/item/:id.json";
-const TOP_ASKS_URL = " https://hacker-news.firebaseio.com/v0/askstories.json";
+const TOP_ASKS_URL = "https://hacker-news.firebaseio.com/v0/askstories.json";
+const TOP_SHOWS_URL = "https://hacker-news.firebaseio.com/v0/showstories.json";
 
 const noCacheHeader = {
 	"Cache-Control" : "no-cache"
@@ -16,6 +17,12 @@ export function fetchTopStories(){
 
 export function fetchTopAsks(){
 	return fetch(TOP_ASKS_URL, {headers: noCacheHeader}).then(function(res){
+		return res.json();
+	});
+}
+
+export function fetchTopShows(){
+	return fetch(TOP_SHOWS_URL, {headers: noCacheHeader}).then(function(res){
 		return res.json();
 	});
 }

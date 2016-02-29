@@ -7,7 +7,8 @@ const RoutedApp = (
 		<Route component={Components.HackerNews} path="/">
 			<IndexRoute component={Components.ItemListView}></IndexRoute>
 			<Route component={Components.ItemListView} path="asks"></Route>
-			<Route component={Components.StoryDetailView} path="s/:sid"></Route>
+			<Route component={Components.ItemListView} path="shows"></Route>
+			<Route component={Components.ItemDetailView} path="i/:id"></Route>
 		</Route>
 	</Router>
 );

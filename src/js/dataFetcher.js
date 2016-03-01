@@ -4,6 +4,7 @@ const TOP_STORIES_URL = "https://hacker-news.firebaseio.com/v0/topstories.json";
 const STORIES_DETAIL_URL = "https://hacker-news.firebaseio.com/v0/item/:id.json";
 const TOP_ASKS_URL = "https://hacker-news.firebaseio.com/v0/askstories.json";
 const TOP_SHOWS_URL = "https://hacker-news.firebaseio.com/v0/showstories.json";
+const NEW_STORIES_URL = "https://hacker-news.firebaseio.com/v0/newstories.json";
 
 const noCacheHeader = {
 	"Cache-Control" : "no-cache"
@@ -23,6 +24,12 @@ export function fetchTopAsks(){
 
 export function fetchTopShows(){
 	return fetch(TOP_SHOWS_URL, {headers: noCacheHeader}).then(function(res){
+		return res.json();
+	});
+}
+
+export function fetchLatest(){
+	return fetch(NEW_STORIES_URL, {headers: noCacheHeader}).then(function(res){
 		return res.json();
 	});
 }

@@ -8,6 +8,7 @@ const RoutedApp = (
 			<IndexRoute component={Components.ItemListView}></IndexRoute>
 			<Route component={Components.ItemListView} path="asks"></Route>
 			<Route component={Components.ItemListView} path="shows"></Route>
+			<Route component={Components.ItemListView} path="latest"></Route>
 			<Route component={Components.ItemDetailView} path="i/:id"></Route>
 		</Route>
 	</Router>

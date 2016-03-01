@@ -86,3 +86,22 @@ export function shows(state={invalidated: true, data: [], lastRefresh: 0}, actio
 
 	return state;
 }
+
+export function latest(state={invalidated: true, data: [], lastRefresh: 0}, action){
+
+	if(action.type===actionTypes.INVALIDATE_LATEST){
+		return {
+			invalidated: true,
+			data: [],
+			lastRefresh: action.lastRefresh
+		}
+	} else if (action.type===actionTypes.REFRESH_LATEST){
+		return {
+			invalidated: false,
+			data: state.data.concat(action.data),
+			lastRefresh: action.lastRefresh
+		};
+	}
+
+	return state;
+}

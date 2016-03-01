@@ -24,7 +24,9 @@
 		}
 
 		.hn-comment-box {
-			border-left: solid black 2px;
+			border-style: solid;
+			border-color: white white white black;
+			border-width: 0px 0px 0px 2px;
 		}
 		.hn-text-black, .hn-text-black *{
 			color: black!important;
@@ -34,11 +36,14 @@
 			font-family: Verdana, Geneva, sans-serif;
 			font-size: 9pt;
 		}
+		body {
+			overflow-y: scroll; 
+		}
 	</style>
 </head>
 <body>
 	<div id="hn-app-container" class='container'></div>
 
-	<script src="bundle.js" type="text/javascript"></script>
+	<script src="build/bundle.js" type="text/javascript"></script>
 </body>
 </html>

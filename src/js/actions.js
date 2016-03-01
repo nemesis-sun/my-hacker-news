@@ -33,6 +33,13 @@ export function invalidateContent(contentType, force){
 				actionType = actionTypes.INVALIDATE_SHOWS;
 				refreshActionType = actionTypes.REFRESH_SHOWS;
 				fetchAction = fetcher.fetchTopShows;
+				break;
+			case "latest":
+				content = getState().latest;
+				actionType = actionTypes.INVALIDATE_LATEST;
+				refreshActionType = actionTypes.REFRESH_LATEST;
+				fetchAction = fetcher.fetchLatest;
+				break;
 		}
 
 		let lastRefresh =  content.lastRefresh;

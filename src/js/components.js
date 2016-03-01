@@ -13,6 +13,7 @@ function mapDispatchToProps(dispatch){
 		invalidateStories: (force) => {dispatch(actions.invalidateContent("story", force))},
 		invalidateAsks: (force) => {dispatch(actions.invalidateContent("ask", force))},
 		invalidateShows: (force) => {dispatch(actions.invalidateContent("show", force))},
+		invalidateLatest: (force) => {dispatch(actions.invalidateContent("latest", force))},
 		viewItemDetail: (id) => {dispatch(actions.viewItemDetail(id))},
 		viewComments: (commentIds) => {dispatch(actions.viewComments(commentIds))}
 	}
@@ -31,6 +32,10 @@ class HackerNews extends React.Component {
 							<i className="material-icons hn-link" style={{'fontSize':'13pt'}} onClick={this._onRefreshStories.bind(this)}>loop</i>
 							<span>
 								<IndexLink to='/'  style={{color: 'black', 'fontSize': '20pt'}}>My Hacker News</IndexLink>
+							</span>
+							&nbsp;&nbsp;
+							<span className="hn-link hn-text-black">
+								<Link to='/latest'>New</Link>
 							</span>
 							&nbsp;&nbsp;
 							<span className="hn-link hn-text-black">
@@ -61,6 +66,8 @@ class HackerNews extends React.Component {
 			this.props.invalidateAsks(true);
 		else if(path.indexOf("/shows")===0)
 			this.props.invalidateShows(true);
+		else if(path.indexOf("/latest")===0)
+			this.props.invalidateLatest(true);
 		else if(path==="/")
 			this.props.invalidateStories(true);
 	}
@@ -75,6 +82,7 @@ class ItemListView extends React.Component {
 			case "/": itemList = this.props.stories.data; break;
 			case "/asks": itemList = this.props.asks.data; break;
 			case "/shows": itemList = this.props.shows.data; break;
+			case "/latest": itemList = this.props.latest.data; break;
 		}
 
 		let itemEleList = itemList.map((item) => {
@@ -103,6 +111,7 @@ class ItemListView extends React.Component {
 			case "/": this.props.invalidateStories(false); break;
 			case "/asks": this.props.invalidateAsks(false); break;
 			case "/shows": this.props.invalidateShows(false); break;
+			case "/latest": this.props.invalidateLatest(false); break;
 		}
 	}
 
@@ -124,7 +133,7 @@ class Item extends React.Component {
 			itemLink = (<span className='hn-story-card-title hn-link hn-text-black'><Link to={'/i/'+item.id}>{item.title}</Link></span>);
 
 		return (
-			<div className='card orange lighten-4'>
+			<div className='card blue-grey lighten-4'>
 				<div className="card-content white-text">
 					<div>
 						{itemLink}
@@ -201,7 +210,7 @@ class CommentItem extends React.Component {
 		const {comment, allComments, viewComments} = this.props;
 		const noOfReplies = comment.kids?comment.kids.length:0;
 		return (
-			<li className='collection-item red lighten-5 hn-comment-box'>			
+			<li className='collection-item blue-grey lighten-4 hn-comment-box'>			
 					<div>
 						<span className='hn-story-sec-text'>{comment.by}&nbsp;&nbsp;&nbsp;</span>
 						<span className='hn-story-sec-text hn-link' disabled={noOfReplies===0} onClick={this._viewChildComments.bind(this)}>{noOfReplies}&nbsp;replies</span>

@@ -6,7 +6,9 @@ new WebpackDevServer(webpack(config), {
   hot: true,
   stats: {
     colors: true
-  }
+  },
+  contentBase: 'public',
+  publicPath: "/js/"
 }).listen(3000, 'localhost', function (err) {
   if (err) {
     console.log(err);

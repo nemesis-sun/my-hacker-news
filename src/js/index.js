@@ -3,9 +3,9 @@ import React from "react"
 import {Provider, connect} from "react-redux"
 import {createStore, combineReducers, applyMiddleware} from "redux"
 import thunk from 'redux-thunk'
-import * as reducers from "./src/js/reducers"
-import * as actionTypes from "./src/js/actionTypes"
-import RoutedApp from "./src/js/routes"
+import * as reducers from "./reducers"
+import * as actionTypes from "./actionTypes"
+import RoutedApp from "./routes"
 
 const store = createStore(combineReducers(reducers), applyMiddleware(thunk));
 

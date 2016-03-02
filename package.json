@@ -4,9 +4,9 @@
   "description": "Clone of my hacker news with Redux/React",
   "main": "index.js",
   "scripts": {
-    "start": "if-env NODE_ENV=prod && npm run start:prod || npm run start:dev",
+    "start": "if-env NODE_ENV=PROD && npm run start:prod || npm run start:dev",
     "start:dev": "node server.js",
-    "start:prod": "webpack --progress --config webpack.prod.config.js && node prod-server.js",
+    "start:prod": "webpack --progress && node prod-server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "NHD",

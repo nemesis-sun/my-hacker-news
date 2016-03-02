@@ -1,15 +1,21 @@
 var path = require('path');
 var webpack = require('webpack');
 
-module.exports = {
-  devtool: 'eval',
-  entry: [
+var entry = [
     'webpack-dev-server/client?http://localhost:3000',
     'webpack/hot/only-dev-server',
-    './index'
-  ],
+    './src/js/index'
+];
+
+if(process.env.NODE_ENV && process.env.NODE_ENV==="PROD")
+  entry = ['./src/js/index'];
+
+
+module.exports = {
+  devtool: 'eval',
+  entry: entry,
   output: {
-    path: path.join(__dirname, "build"),
+    path: path.join(__dirname, "public", "js"),
     filename: 'bundle.js'
   },
   plugins: [

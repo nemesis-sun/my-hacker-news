@@ -8,7 +8,8 @@ new WebpackDevServer(webpack(config), {
     colors: true
   },
   contentBase: 'public',
-  publicPath: "/js/"
+  publicPath: "/js/",
+  historyApiFallback: true
 }).listen(3000, 'localhost', function (err) {
   if (err) {
     console.log(err);

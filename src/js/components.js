@@ -35,15 +35,15 @@ class HackerNews extends React.Component {
 							</span>
 							&nbsp;&nbsp;
 							<span className="hn-link hn-text-black">
-								<Link to='/latest'>New</Link>
+								<Link activeClassName='hn-active-page' to='/latest'>New</Link>
 							</span>
 							&nbsp;&nbsp;
 							<span className="hn-link hn-text-black">
-								<Link to='/asks'>Ask</Link>
+								<Link activeClassName='hn-active-page' to='/asks'>Ask</Link>
 							</span>
 							&nbsp;&nbsp;
 							<span className="hn-link hn-text-black">
-								<Link to='/shows'>Show</Link>
+								<Link activeClassName='hn-active-page' to='/shows'>Show</Link>
 							</span>							
 						</span>
 					</div>		        

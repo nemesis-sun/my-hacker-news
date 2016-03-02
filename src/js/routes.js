@@ -1,9 +1,9 @@
 import Components from "./components"
-import {Router, Route, Link, IndexRoute, hashHistory} from 'react-router'
+import {Router, Route, Link, IndexRoute, browserHistory} from 'react-router'
 import React from "react"
 
 const RoutedApp = (
-	<Router history={hashHistory} >
+	<Router history={browserHistory} >
 		<Route component={Components.HackerNews} path="/">
 			<IndexRoute component={Components.ItemListView}></IndexRoute>
 			<Route component={Components.ItemListView} path="asks"></Route>

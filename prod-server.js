@@ -8,9 +8,12 @@ import {routes} from "./src/js/routes"
 import {Provider, connect} from "react-redux"
 import React from 'react'
 import { match, RouterContext } from 'react-router'
+import jade from 'jade'
 
 const app = express();
 
+app.set('view engine', 'jade');
+app.set('views', './template');
 
 app.use("/static", express.static('public'));
 
@@ -29,30 +32,16 @@ function handleServerRendering(req, res){
 			res.redirect(302, redirectLocation.pathname + redirectLocation.search);
 		} else if (renderProps) {
 			console.log("Route found");
-			console.log(renderProps.components);
 
-      		const activeRoute = (<RouterContext {...renderProps} />);
-      		const containerHTML = renderToString(<Provider store={store}>{activeRoute}</Provider>);
+      		const activeRoute = (<Provider store={store}><RouterContext {...renderProps} /></Provider>);
+      		const containerHTML = renderToString(activeRoute);
 			const initialState = JSON.stringify(store.getState());
-
-			res.send(`
-		    <!doctype html>
-		    <html>
-		      <head>
-		        <title>My Hacker News - Server Rendering</title>
-		        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css">
-				<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-				<link href="static/css/style.css" rel="stylesheet">
-		      </head>
-		      <body>
-		        <div id="hn-app-container" class='container'>${containerHTML}</div>
-		        <script>
-		          window.__INITIAL_STATE__ = ${initialState}
-		        </script>
-		        <script src="static/js/bundle.js"></script>
-		      </body>
-		    </html>
-		    `);
+			
+			res.render('index', {
+				pageTitle: 'My Hacker News - Server Rendering',
+				renderedHTML: containerHTML,
+				initialState: initialState
+			});
 		} else {
 			console.log("404 Not found");
 			res.status(404).send('Not found');

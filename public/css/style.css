@@ -1,0 +1,40 @@
+.hn-story-card-title {
+    color: black;
+}
+
+.hn-story-sec-text {
+    font-size: 7pt;
+    color: gray;
+}
+
+.hn-story-sec-text.hn-link:hover {
+    color: black;
+}
+
+.hn-link {
+    cursor: pointer;
+}
+
+.hn-comment-box {
+    border-style: solid;
+    border-color: white white white black;
+    border-width: 0px 0px 0px 2px;
+}
+
+.hn-text-black,
+.hn-text-black * {
+    color: black!important;
+}
+
+.hn-active-page {
+    text-decoration: underline;
+}
+
+html {
+    font-family: Verdana, Geneva, sans-serif;
+    font-size: 9pt;
+}
+
+body {
+    overflow-y: scroll;
+}

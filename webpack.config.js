@@ -1,44 +1,57 @@
 var path = require('path');
 var webpack = require('webpack');
-
-var entry = [
-    'webpack-dev-server/client?http://localhost:3000',
-    'webpack/hot/only-dev-server',
-    './src/js/index'
-];
-
-if(process.env.NODE_ENV && process.env.NODE_ENV==="PROD")
-  entry = ['./src/js/index'];
+var nodeExternals = require('webpack-node-externals');
 
 
-module.exports = {
-  devtool: 'eval',
-  entry: entry,
-  output: {
-    path: path.join(__dirname, "public", "js"),
-    filename: 'bundle.js'
-  },
-  plugins: [
-    new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoErrorsPlugin(),
-    new webpack.ProvidePlugin({
-      "Promise" : "es6-promise",
-      "fetch" : "imports?this=>global!exports?global.fetch!whatwg-fetch"
-    })
-  ],
-  module: {
-    loaders: [{
-      test: /\.js$/,
-      loaders: ['react-hot', 'babel'],
-      exclude: /node_modules/,
-      include: __dirname
+var commonConfig = {
+    devtool: 'eval',
+    plugins: [
+        new webpack.HotModuleReplacementPlugin(),
+        new webpack.NoErrorsPlugin(),
+        new webpack.ProvidePlugin({
+            "Promise": "es6-promise",
+            "fetch": "imports?this=>global!exports?global.fetch!whatwg-fetch"
+        })
+    ],
+    module: {
+        loaders: [{
+                test: /\.js$/,
+                loaders: ['react-hot', 'babel'],
+                exclude: /node_modules/,
+                include: __dirname
+            },
+            // {
+            //   test: /\.css?$/,
+            //   loader: 'style-loader!css-loader',
+            //   //exclude: /node_modules/,
+            //   include: __dirname
+            // }
+        ]
+    }
+}
+
+var clientConfig = {
+    entry: './src/js/index',
+    output: {
+        path: path.join(__dirname, "public", "js"),
+        filename: 'bundle.js'
     },
-    // {
-    //   test: /\.css?$/,
-    //   loader: 'style-loader!css-loader',
-    //   //exclude: /node_modules/,
-    //   include: __dirname
-    // }
-    ]
-  }
-};
+    devtool: commonConfig.devtool,
+    plugins: commonConfig.plugins,
+    module: commonConfig.module
+}
+
+var serverConfig = {
+    entry: './prod-server.js',
+    output: {
+        path: __dirname,
+        filename: 'prod-server-compiled.js'
+    },
+    devtool: commonConfig.devtool,
+    plugins: commonConfig.plugins,
+    module: commonConfig.module,
+    target: 'node',
+    externals: [nodeExternals()]
+}
+
+module.exports = [serverConfig, clientConfig];

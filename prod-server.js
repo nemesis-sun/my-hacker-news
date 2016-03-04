@@ -10,6 +10,8 @@ import React from 'react'
 import { match, RouterContext } from 'react-router'
 import jade from 'jade'
 
+const port = process.env.PORT || 8080;
+
 const app = express();
 
 app.set('view engine', 'jade');
@@ -50,6 +52,6 @@ function handleServerRendering(req, res){
 
 }
 
-app.listen(8080, function() {
-  console.log('Express production server running at localhost:8080');
+app.listen(port, function() {
+  console.log('Express production server running at port '+port);
 });

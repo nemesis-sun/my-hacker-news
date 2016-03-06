@@ -1,9 +1,10 @@
 .hn-story-card-title {
     color: black;
+    font-size: 1em;
 }
 
 .hn-story-sec-text {
-    font-size: 7pt;
+    font-size: 0.75em;
     color: gray;
 }
 
@@ -19,6 +20,7 @@
     border-style: solid;
     border-color: white white white black;
     border-width: 0px 0px 0px 2px;
+    font-size: 1em;
 }
 
 .hn-text-black,
@@ -32,7 +34,6 @@
 
 html {
     font-family: Verdana, Geneva, sans-serif;
-    font-size: 9pt;
 }
 
 body {

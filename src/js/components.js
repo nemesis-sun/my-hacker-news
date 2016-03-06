@@ -29,9 +29,9 @@ class HackerNews extends React.Component {
 				<div className='row'>
 					<div className='col s12'>
 						<span>
-							<i className="material-icons hn-link" style={{'fontSize':'13pt'}} onClick={this._onRefreshStories.bind(this)}>loop</i>
+							<i className="material-icons hn-link" style={{'fontSize':'1em'}} onClick={this._onRefreshStories.bind(this)}>loop</i>
 							<span>
-								<IndexLink to='/'  style={{color: 'black', 'fontSize': '20pt'}}>My Hacker News</IndexLink>
+								<IndexLink to='/'  style={{color: 'black', 'fontSize': '1.5em'}}>My Hacker News</IndexLink>
 							</span>
 							&nbsp;&nbsp;
 							<span className="hn-link hn-text-black">
@@ -134,7 +134,7 @@ class Item extends React.Component {
 
 		return (
 			<div className='card blue-grey lighten-4'>
-				<div className="card-content white-text">
+				<div className="card-content">
 					<div>
 						{itemLink}
 						<span className="hn-story-sec-text">&nbsp;&nbsp;&nbsp;{item.score}&nbsp;points</span>
